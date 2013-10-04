@@ -1,0 +1,504 @@
+<!--
+Google IO 2012 HTML5 Slide Template
+
+Authors: Eric Bidelman <ebidel@gmail.com>
+         Luke Mahe <lukem@google.com>
+
+URL: https://code.google.com/p/io-2012-slides
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Google IO 2012</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="all" href="theme/css/app.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+<slide class="logoslide nobackground">
+  <article class="flexbox vcenter">
+    <span><img src="images/sprug_developers.jpg" style="width:auto;height:auto;"></span>
+  </article>
+</slide>
+
+<slide class="title-slide segue nobackground">
+  <aside class="gdbar"><img src="images/sprug_logo.png"></aside>
+  <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+  <hgroup class="auto-fadein">
+    <h1 data-config-title><!-- populated from slide_config.json --></h1>
+    <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+    <p data-config-presenter><!-- populated from slide_config.json --></p>
+  </hgroup>
+</slide>
+
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2>Agenda</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>Предыстория</li>
+<li>Karma. Основные понятия</li>
+<li>Как это работает</li>
+<li>Примеры</li>
+<li>Выводы</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Предыстория</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Большой проект + Большая команда = Много кода</p>
+<p>Появилась необходимость привести
+в порядок большой участок кода(модуль).
+Который несет ответственность за важную функциональность.</p></article>
+ 
+</slide>
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2>Инструменты</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Какие инструменты были в моем распоряжении</p>
+<ul>
+<li><a href="http://www.vim.org">Vim</a> в качестве редактора</li>
+<li><a href="http://jshint.com">JsHint</a> для быстрой проверки синтаксиса</li>
+<li><a href="https://github.com/metaskills/mocha-phantomjs">Mocha-Phantomjs</a> для запуска тестов</li>
+<li><a href="http://www.amazon.com/gp/product/0201485672?ie=UTF8&amp;tag=martinfowlerc-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0201485672">Книжки по refactoring-у</a></li>
+<li>Задача по улучшению тестов</li>
+</ul>
+<p>И желание!</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Проблемы</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Не все гладко было в этом королевстве.</p>
+<ul>
+<li>Много непонятного кода</li>
+<li>Нету тестов (для модуля)</li>
+<li><a href="https://github.com/bem/borschik">Собственная система</a> сборки зависимостей для JavaScript</li>
+<li>Make</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Эволюция тестов в проекте</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><ul>
+<li>Нет тестов</li>
+<li>Запускаются в браузере</li>
+<li>Запускаются в браузере (Guard-livereload)</li>
+<li>Запускаются в терминале (mocha-phantomjs)</li>
+<li>Запускаются в терминале. Нет жесткой зависимы от окружения где выполняются тесты (Karma)*</li>
+</ul>
+<p>*Еще в стадии внедрения в проект</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Чего хотелось</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><ul>
+<li>Избавиться от файла index.html для тестов</li>
+<li>Использовать code coverage, code analyzer</li>
+<li>Интеграция с терминалом</li>
+<li>Возможность запускать тесты на CI сервере</li>
+<li>Nodejs/npm</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Что предлагали</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><ul>
+<li>Grunt + PhantomJS + Make</li>
+</ul>
+<p>Все тот же index.html + Make сборки файлов</p>
+<pre class="prettyprint" data-lang="mk">
+$(NPM_BIN)/borschik -i dist/some-file.js --minimize=no -o dist/_some-processed-file.js
+$(NPM_BIN)/grunt
+$(MAKE) grunt-clean
+</pre>
+
+<p>Проблема. Каждый раз надо добавлять файл в index.html и Make.
+Чревато ошибкам.</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Мысли</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><h2>Karma?</h2>
+<p>...Вроде что-то, что может решить мои проблемы...</p>
+<p>И задача есть под такое дело.</p>
+<p><strong>Надо попробовать!</strong></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Karma</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Karma - это инструмент для автоматического запуска JavaScript тестов, написанный на nodejs.</p>
+<p>Не framework для написания тестов!</p>
+<p>Автор Vojta Jína (Google, AngularJs Team member)</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Основные особенности</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><ul>
+<li>Поддерживает большинство браузеров</li>
+<li>Обещает высокую скорость</li>
+<li>Надежный</li>
+<li>Расширяемый. Возможность использовать языки компилируемые в JavaScript</li>
+<li>Есть интеграция с IDE. Консольный интерфейс</li>
+<li>Интеграция с CI</li>
+<li>Простота</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Установка</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Установка:
+<pre class="prettyprint" data-lang="bash">
+npm install karma
+karma init
+npm install mocha --save-dev
+npm install karma-phantomjs-launcher --save-dev
+npm install karma-expect
+</pre>
+Результат karma.conf.js</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Настройка (karma.conf.js)</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><pre class="prettyprint" data-lang="javascript">
+module.exports = function(config) {
+  config.set({
+    basePath: '',
+    frameworks: ['mocha', 'expect'],
+    files: [
+      'test/**/*_test.js'
+    ],
+    exclude: [],
+    reporters: ['progress'],
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+    browsers: ['PhantomJS'],
+    captureTimeout: 60000,
+    singleRun: false
+});
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Files</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Избавляемся от index.html</p>
+<pre class="prettyprint" data-lang="javascript">
+files: [
+
+  // Простой шаблон для загрузки все файлов с тестами
+  // Эквивалент для {pattern: 'test/unit/*.spec.js',
+  // watched: true, served: true, included: true}
+  'test/unit/*_test.js',
+
+  // файл который загружается на сервер, но за которым не следим
+  {pattern: 'compiled/index.html', watched: false},
+
+  // файл за которым только следим
+  {pattern: 'app/index.html', included: false, served: false}
+  ],
+]
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Plugins</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Frameworks:
+<pre class="prettyprint" data-lang="javascript">
+frameworks: ['mocha', 'expect'],
+</pre></p>
+<p>Preprocessors:
+<pre class="prettyprint" data-lang="javascript">
+preprocessors: {
+  '<strong>/*.coffee': ['coffee'],
+  '</strong>/*.html': ['html2js']
+},
+</pre></p>
+<p>Reporters:
+<pre class="prettyprint" data-lang="javascript">
+reporters: ['progress', 'coverage'],
+</pre></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Как это работает</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Клиент - Сервер</p>
+<p><img alt="Client - Server" src="images/karma-design.png" /></p>
+<p>Inversion of Control / Dependency Injection</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>На клиенте</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Клиент</p>
+<p><img alt="Client - Server" src="images/karma-implementation.png" /></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Примеры</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Репортер
+<pre class="prettyprint" data-lang="javascript">
+module.exports = function(config) {
+  config.set({
+    ...
+    plugins:[
+      {'reporter:console', ['type', function(){
+        this.onBrowserComplete = function (browser) {
+            console.log('Result: ', browser.lastResult.failed ? 'Fail' : 'Ok');
+          }
+      }]}
+    ]
+});
+</pre></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>karma-expect</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p><img alt="karma-expect" src="images/karma-expect.png" />
+Пример framework-а</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Borschik</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><p>Загрузка зависимостей/Модульность в Yandex.Mail</p>
+<pre class="prettyprint" data-lang="javascript">
+  /*borschik:include:common.js*/
+</pre>
+
+<p><a href="https://github.com/bem/borschik">borschik</a></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Чуточку сложнее, но полезнее</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><pre class="prettyprint" data-lang="javascript">
+var borschik = require('borschik');
+var stream = require('./lib/stream');
+var createBorschikPreprocessor = function(args, config, logger, helper) {
+    config = config || {};
+    var log = logger.create('preprocessor.borschik');
+    var defaultOptions = {
+        'comments': false,
+        'freeze': false,
+        'minimize': false,
+        'tech': 'js'
+    };
+    var options = helper.merge(defaultOptions, args.options || {}, config.options || {});
+    ...
+};
+createBorschikPreprocessor.$inject = ['args', 'config.borschikPreprocessor', 'logger', 'helper'];
+module.exports = { 'preprocessor:borschik': ['factory', createBorschikPreprocessor] };
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>...</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><pre class="prettyprint" data-lang="javascript">
+    return function(content, file, done) {
+        var output = new stream.Writable();
+        var result = null;
+        var onError = function(errorObject) {
+            log.error('%s\n  at %s', errorObject.message, file.originalPath);
+        };
+        log.debug('Processing "%s".', file.originalPath);
+        var opts = helper._.clone(options);
+        opts.input = file.originalPath;
+        opts.output = output;
+        output.on('data', function(data) {
+            done(data);
+        });
+        try {
+            result = borschik.api(opts).fail(onError);
+        } catch (e) {
+            onError(e);
+            return;
+        }
+    };
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Выводы</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><ul>
+<li>Быстрый, надежный, гибкий</li>
+<li>Продуманная архитектура</li>
+<li>Много интересных решений</li>
+<li>Удобно!</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Ссылки</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="flexbox vcenter"><ul>
+<li><a href="https://karma-runner.github.io">Сайт проекта</a></li>
+<li><a href="https://github.com/karma-runner/karma">Проект на github</a></li>
+<li><a href="https://github.com/karma-runner/karma/raw/master/thesis.pdf">Как это работает</a></li>
+<li><a href="https://github.com/vojtajina/node-di">DI для Nodejs</a></li>
+<li><a href="https://github.com/vojtajina/node-mocks">Коллекция мок-объектов для Nodejs</a></li>
+<li><a href="https://github.com/maksimr/karma-borschik-preprocessor">Borschik preprocessor</a></li>
+</ul></article>
+ 
+</slide>
+
+
+<slide class="thank-you-slide segue nobackground">
+  <aside class="gdbar right"><img src="images/google_developers_icon_128.png"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <h2>&lt;Thank You!&gt;</h2>
+    <p>Important contact information goes here.</p>
+  </article>
+  <p class="auto-fadein" data-config-contact>
+    <!-- populated from slide_config.json -->
+  </p>
+</slide>
+
+<!-- <slide class="logoslide dark nobackground">
+  <article class="flexbox vcenter">
+    <span><img src="images/google_developers_logo_white.png"></span>
+  </article>
+</slide> -->
+
+<slide class="backdrop"></slide>
+
+</slides>
+
+<script>
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-XXXXXXXX-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>
